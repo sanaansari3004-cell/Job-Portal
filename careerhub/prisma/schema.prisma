@@ -1,0 +1,105 @@
+// CareerHub — Job Portal
+// PostgreSQL schema. Run migrations with: npx prisma migrate dev
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  CANDIDATE
+  RECRUITER
+  ADMIN
+}
+
+enum JobType {
+  FULL_TIME
+  PART_TIME
+  CONTRACT
+  INTERNSHIP
+}
+
+enum JobStatus {
+  OPEN
+  CLOSED
+}
+
+enum Stage {
+  APPLIED
+  SHORTLISTED
+  INTERVIEW
+  HIRED
+  REJECTED
+}
+
+model User {
+  id           String        @id @default(cuid())
+  email        String        @unique
+  passwordHash String
+  name         String
+  role         Role          @default(CANDIDATE)
+  createdAt    DateTime      @default(now())
+
+  profile      Profile?
+  postedJobs   Job[]         @relation("RecruiterJobs")
+  applications Application[] @relation("CandidateApplications")
+}
+
+model Profile {
+  id         String   @id @default(cuid())
+  userId     String   @unique
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  headline   String?
+  location   String?
+  skills     String[] @default([])
+  experience String?  @db.Text
+  education  String?  @db.Text
+  resumeKey  String?
+  resumeName String?
+  updatedAt  DateTime @updatedAt
+}
+
+model Job {
+  id           String        @id @default(cuid())
+  title        String
+  company      String
+  location     String
+  jobType      JobType       @default(FULL_TIME)
+  category     String
+  experience   String
+  salaryMin    Int?
+  salaryMax    Int?
+  description  String        @db.Text
+  requirements String        @db.Text
+  status       JobStatus     @default(OPEN)
+  recruiterId  String
+  recruiter    User          @relation("RecruiterJobs", fields: [recruiterId], references: [id], onDelete: Cascade)
+  applications Application[]
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  @@index([status, createdAt])
+  @@index([category])
+  @@index([location])
+}
+
+model Application {
+  id          String   @id @default(cuid())
+  jobId       String
+  job         Job      @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  candidateId String
+  candidate   User     @relation("CandidateApplications", fields: [candidateId], references: [id], onDelete: Cascade)
+  coverNote   String?  @db.Text
+  stage       Stage    @default(APPLIED)
+  notes       String?  @db.Text
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([jobId, candidateId])
+  @@index([candidateId])
+  @@index([jobId])
+}

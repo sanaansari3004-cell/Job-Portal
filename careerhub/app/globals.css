@@ -1,0 +1,47 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  background-color: #faf6ed;
+  color: #181310;
+  font-family: var(--font-body), system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Editorial helpers */
+@layer components {
+  .kicker {
+    @apply font-display text-[11px] font-bold uppercase tracking-[0.22em] text-oxblood;
+  }
+  .rule-double {
+    border-top: 3px solid #181310;
+    position: relative;
+  }
+  .rule-double::after {
+    content: "";
+    position: absolute;
+    top: 5px;
+    left: 0;
+    right: 0;
+    border-top: 1px solid #181310;
+  }
+  .btn-press {
+    @apply inline-flex items-center justify-center gap-2 bg-ink text-paper font-display text-sm font-bold uppercase tracking-wider px-5 py-2.5 border border-ink transition-colors hover:bg-oxblood hover:border-oxblood disabled:opacity-50 disabled:pointer-events-none;
+  }
+  .btn-outline {
+    @apply inline-flex items-center justify-center gap-2 bg-transparent text-ink font-display text-sm font-bold uppercase tracking-wider px-5 py-2.5 border border-ink transition-colors hover:bg-ink hover:text-paper disabled:opacity-50 disabled:pointer-events-none;
+  }
+  .field {
+    @apply w-full bg-paper-card border border-hairline px-3 py-2.5 text-sm text-ink placeholder:text-ink-faint focus:outline-none focus:border-ink transition-colors;
+  }
+  .label {
+    @apply block font-display text-xs font-bold uppercase tracking-[0.14em] text-ink-soft mb-1.5;
+  }
+  .card {
+    @apply bg-paper-card border border-hairline shadow-press;
+  }
+  .dateline {
+    @apply font-display text-xs uppercase tracking-[0.18em] text-ink-faint;
+  }
+}
